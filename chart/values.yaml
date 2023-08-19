@@ -22,3 +22,11 @@ image:
 
 virtualServicePort: 80
 replicas: 2
+
+secretStore:
+  provider: azure
+  enabled: true
+  usePodIdentity: false
+  useVMManagedIdentity: true
+  secrets:
+  identity:

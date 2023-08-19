@@ -23,6 +23,20 @@ spec:
         - containerPort: {{ .Values.service.port }}
           protocol: TCP
           name: http
+        {{- if .Values.secretStore.enabled }}
+        volumeMounts:
+          - name: {{ include "service.fullname" . }}
+            mountPath: "/mnt/secret-store"
+            readOnly: true
+        env:
+        {{- range $secret := .Values.secretStore.secrets }}
+          - name: {{ $secret.envName }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ $secret.alias }}
+                key: {{ $secret.alias }}
+        {{ end }}
+        {{ end }}
         {{- if .Values.image.includeReadinessProbe }}
         readinessProbe:
           httpGet:
@@ -30,8 +44,18 @@ spec:
             port: {{ .Values.service.port }}
           initialDelaySeconds: 2
           periodSeconds: 2
+        {{ end }}
       {{- if .Values.image.pullSecret }}
       imagePullSecrets:
         - name: {{ .Values.image.pullSecret }}
       {{- end }}
       restartPolicy: Always
+      {{- if .Values.secretStore.enabled }}
+      volumes:
+        - name: {{ include "service.fullname" . }}
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ include "service.fullname" . }}
+      {{- end }}
