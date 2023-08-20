@@ -8,7 +8,6 @@ fullnameOverride: "hello-world"
 
 service:
   port: 80
-  deployVirtualService: true
   
 istio:
   gateways:
