@@ -25,6 +25,7 @@ replicas: 2
 
 secretStore:
   provider: azure
+  cloudName: AzureCloud
   enabled: true
   usePodIdentity: false
   useVMManagedIdentity: true
